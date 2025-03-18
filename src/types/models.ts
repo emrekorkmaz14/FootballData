@@ -1,51 +1,90 @@
 // src/types/models.ts
 
-// Lig modeli
-export interface League {
-  id: string;
+// Lig (Competition) modeli
+export interface Competition {
+  id: number;
   name: string;
-  country: string;
-  logo: string;
-  flag: string;
+  code: string;
+  type: string;
+  emblem: string;
+  area?: {
+    name: string;
+    flag?: string;
+  };
+  currentSeason?: {
+    startDate: string;
+    endDate: string;
+    currentMatchday?: number;
+  };
 }
 
 // Takım modeli
 export interface Team {
-  id: string;
+  id: number;
   name: string;
   shortName?: string;
-  logo: string;
-  country?: string;
+  tla?: string;
+  crest: string; // logo URL
+  address?: string;
+  website?: string;
   founded?: number;
-  stadium?: string;
+  clubColors?: string;
+  venue?: string;
+  coach?: {
+    id: number;
+    name: string;
+    nationality?: string;
+  };
+}
+
+// Skor modeli
+export interface Score {
+  winner?: 'HOME_TEAM' | 'AWAY_TEAM' | 'DRAW' | null;
+  duration?: 'REGULAR' | 'EXTRA_TIME' | 'PENALTIES';
+  fullTime?: {
+    home: number | null;
+    away: number | null;
+  };
+  halfTime?: {
+    home: number | null;
+    away: number | null;
+  };
 }
 
 // Maç modeli
 export interface Match {
-  id: string;
-  date: string;
-  time: string;
-  status: 'SCHEDULED' | 'LIVE' | 'FINISHED' | 'CANCELLED' | 'POSTPONED';
+  id: number;
+  utcDate: string;
+  status: 'SCHEDULED' | 'LIVE' | 'IN_PLAY' | 'PAUSED' | 'FINISHED' | 'SUSPENDED' | 'POSTPONED' | 'CANCELLED' | 'AWARDED';
+  matchday?: number;
+  stage?: string;
+  group?: string;
+  lastUpdated: string;
+  score: Score;
   homeTeam: {
-    id: string;
+    id: number;
     name: string;
-    logo: string;
-    score?: number;
+    shortName?: string;
+    tla?: string;
+    crest: string;
   };
   awayTeam: {
-    id: string;
+    id: number;
     name: string;
-    logo: string;
-    score?: number;
+    shortName?: string;
+    tla?: string;
+    crest: string;
   };
-  league: {
-    id: string;
+  competition: {
+    id: number;
     name: string;
-    logo: string;
+    code: string;
+    type: string;
+    emblem: string;
   };
 }
 
-// Haber modeli
+// Haber modeli (hala tutuyoruz)
 export interface News {
   id: string;
   title: string;

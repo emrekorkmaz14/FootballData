@@ -1,5 +1,5 @@
 // src/screens/home/HomeScreen.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,8 @@ import {
   Image,
   Dimensions,
   StyleSheet,
-  FlatList
+  FlatList,
+  ActivityIndicator
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -18,11 +19,13 @@ import { Ionicons } from '@expo/vector-icons';
 
 // Tipler
 import { RootStackParamList } from '../../navigation/NavigationTypes';
-import { League, News } from '../../types/models';
+import { Competition, Match, News } from '../../types/models';
 
-// Mock veriler
-import { popularLeagues, allLeagues, mockNews } from '../../constants/mockData';
-import colors from '../../constants/colors';
+// API servisi
+import { getCompetitions, getMatchesByCompetition, getTodayMatches } from '../../services/api';
+
+// Mock veriler (yedek olarak)
+import { mockCompetitions, mockMatches, mockNews } from '../../constants/mockData';
 
 const { width } = Dimensions.get('window');
 
@@ -36,17 +39,100 @@ type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
-  const [selectedDay, setSelectedDay] = useState(17); // Görseldeki gibi 17'yi seçili yap
-  const [selectedNewsSource, setSelectedNewsSource] = useState('All');
 
-  // Ayın günlerini oluştur (15-22 arası)
+  // State tanımlamaları
+  const [competitions, setCompetitions] = useState<Competition[]>([]);
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [selectedCompetition, setSelectedCompetition] = useState<string | number>('ALL');
+  const [selectedDay, setSelectedDay] = useState(today.getDate());
+  const [selectedNewsSource, setSelectedNewsSource] = useState('All');
+  const [loading, setLoading] = useState(true);
+  const [loadingMatches, setLoadingMatches] = useState(false);
+
+  // API'den ligleri çekmek için
+  useEffect(() => {
+    fetchCompetitions();
+  }, []);
+
+  // Seçilen lig değiştiğinde maçları güncelle
+  useEffect(() => {
+    fetchMatches();
+  }, [selectedCompetition]);
+
+  // Seçilen gün değiştiğinde maçları güncelle
+  useEffect(() => {
+    fetchMatches();
+  }, [selectedDay]);
+
+  // Ligleri getir
+  const fetchCompetitions = async () => {
+    setLoading(true);
+    try {
+      // API'den ligleri çek
+      const competitionsData = await getCompetitions();
+      setCompetitions(competitionsData);
+    } catch (error) {
+      console.error('Error fetching competitions:', error);
+      // Hata durumunda mock verileri kullan
+      setCompetitions(mockCompetitions);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Maçları getir
+  const fetchMatches = async () => {
+    setLoadingMatches(true);
+    try {
+      let matchesData;
+
+      // Seçilen tarih için tarih aralığı oluştur
+      const selectedDate = new Date(today.getFullYear(), today.getMonth(), selectedDay);
+      const dateString = selectedDate.toISOString().split('T')[0]; // YYYY-MM-DD formatında
+
+      if (selectedCompetition === 'ALL') {
+        // Tüm ligler için o günün maçlarını getir
+        matchesData = await getTodayMatches();
+      } else {
+        // Belirli bir lig için maçları getir
+        matchesData = await getMatchesByCompetition(selectedCompetition.toString(), dateString, dateString);
+      }
+
+      // Maçları saat sırasına göre sırala
+      const sortedMatches = matchesData.sort((a: Match, b: Match) =>
+        new Date(a.utcDate).getTime() - new Date(b.utcDate).getTime()
+      );
+
+      setMatches(sortedMatches);
+    } catch (error) {
+      console.error('Error fetching matches:', error);
+
+      // Hata durumunda mock verileri kullan
+      if (selectedCompetition === 'ALL') {
+        setMatches(mockMatches);
+      } else {
+        // Mock verileri filtrele
+        const filteredMatches = mockMatches.filter(
+          match => match.competition.id === selectedCompetition
+        );
+        setMatches(filteredMatches);
+      }
+    } finally {
+      setLoadingMatches(false);
+    }
+  };
+
+  // Ayın günlerini oluştur (bugünden itibaren iki hafta)
   const getDaysInMonth = () => {
     const days = [];
+    const currentDate = today.getDate();
 
-    for (let i = 7; i <= 30; i++) {
-      const date = new Date(today.getFullYear(), today.getMonth(), i);
+    // Bugün ve sonraki 14 gün
+    for (let i = 0; i < 15; i++) {
+      const day = currentDate + i;
+      const date = new Date(today.getFullYear(), today.getMonth(), day);
       const dayOfWeek = weekDays[date.getDay()];
-      days.push({ day: i, dayOfWeek });
+      days.push({ day, dayOfWeek, date });
     }
 
     return days;
@@ -54,14 +140,202 @@ const HomeScreen = () => {
 
   const days = getDaysInMonth();
 
-  const handleLeaguePress = (league: League) => {
-    console.log('Seçilen lig:', league.name);
+  // Maç saatini formatla
+  const formatMatchTime = (utcDateString: string) => {
+    const date = new Date(utcDateString);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  // Maç durumu stilini belirle
+  const getStatusStyle = (status: string) => {
+    switch (status) {
+      case 'LIVE':
+      case 'IN_PLAY':
+        return styles.liveStatus;
+      case 'FINISHED':
+        return styles.finishedStatus;
+      case 'SCHEDULED':
+        return styles.scheduledStatus;
+      case 'POSTPONED':
+      case 'CANCELLED':
+        return styles.cancelledStatus;
+      default:
+        return styles.scheduledStatus;
+    }
+  };
+
+  // Maç durumu metnini belirle
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'LIVE':
+      case 'IN_PLAY':
+        return 'LIVE';
+      case 'PAUSED':
+        return 'BREAK';
+      case 'FINISHED':
+        return 'FINISHED';
+      case 'SCHEDULED':
+        return 'UPCOMING';
+      case 'POSTPONED':
+        return 'POSTPONED';
+      case 'CANCELLED':
+        return 'CANCELLED';
+      case 'SUSPENDED':
+        return 'SUSPENDED';
+      default:
+        return status;
+    }
   };
 
   // Haberleri filtrele (seçili kaynağa göre)
   const filteredNews = selectedNewsSource === 'All'
     ? mockNews
     : mockNews.filter(news => news.league.name === selectedNewsSource);
+
+  // Canlı maçları render et
+  const renderLiveMatch = (match: Match) => {
+    if (!match) return null;
+
+    return (
+      <View style={styles.matchCard}>
+        <View style={styles.matchTeamsContainer}>
+          {/* Home Team */}
+          <View style={styles.teamLeftContainer}>
+            <Image
+              source={{ uri: match.homeTeam.crest }}
+              style={styles.teamLogo}
+              resizeMode="contain"
+            />
+          </View>
+
+          {/* Away Team */}
+          <View style={styles.teamRightContainer}>
+            <Image
+              source={{ uri: match.awayTeam.crest }}
+              style={styles.teamLogo}
+              resizeMode="contain"
+            />
+            <View style={styles.liveTag}>
+              <Text style={styles.liveText}>LIVE</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Bottom Info */}
+        <View style={styles.matchInfoContainer}>
+          <View style={styles.matchInfoHeader}>
+            <View style={styles.teamsInfoPill}>
+              <Image
+                source={{ uri: match.competition.emblem }}
+                style={styles.leagueLogoSmall}
+                resizeMode="contain"
+              />
+              <Text style={styles.teamShortName}>{match.homeTeam.tla || match.homeTeam.shortName}</Text>
+              <Text style={styles.vsText}>vs</Text>
+              <Text style={styles.teamShortName}>{match.awayTeam.tla || match.awayTeam.shortName}</Text>
+            </View>
+            <Text style={styles.matchDate}>
+              {new Date(match.utcDate).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+              })}
+            </Text>
+          </View>
+
+          <View style={styles.scoreContainer}>
+            <Text style={styles.scoreText}>{match.score.fullTime?.home ?? 0}</Text>
+            <Text style={styles.scoreSeparator}>:</Text>
+            <Text style={styles.scoreText}>{match.score.fullTime?.away ?? 0}</Text>
+          </View>
+
+          <View style={styles.watchNowContainer}>
+            <TouchableOpacity style={styles.watchNowButton}>
+              <Text style={styles.watchNowText}>Watch Now</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
+  // Maç listesini render et
+  const renderMatchItem = (match: Match) => {
+    return (
+      <TouchableOpacity key={match.id} style={styles.matchListItem}>
+        <View style={styles.matchItemHeader}>
+          <View style={styles.leagueInfo}>
+            <Image
+              source={{ uri: match.competition.emblem }}
+              style={styles.matchLeagueLogo}
+              resizeMode="contain"
+            />
+            <Text style={styles.matchLeagueName}>{match.competition.name}</Text>
+          </View>
+          <View style={[styles.matchStatusBadge, getStatusStyle(match.status)]}>
+            <Text style={styles.matchStatusText}>{getStatusText(match.status)}</Text>
+          </View>
+        </View>
+
+        <View style={styles.matchTeamRow}>
+          {/* Home Team */}
+          <View style={styles.matchTeamInfo}>
+            <Image
+              source={{ uri: match.homeTeam.crest }}
+              style={styles.matchTeamLogo}
+              resizeMode="contain"
+            />
+            <Text style={styles.matchTeamName} numberOfLines={1}>
+              {match.homeTeam.shortName || match.homeTeam.name}
+            </Text>
+          </View>
+
+          {/* Score/Time */}
+          <View style={styles.matchScoreContainer}>
+            {match.status === 'SCHEDULED' ? (
+              <Text style={styles.matchTimeText}>{formatMatchTime(match.utcDate)}</Text>
+            ) : (
+              <View style={styles.matchScoreBoard}>
+                <Text style={[
+                  styles.matchScoreText,
+                  (match.status === 'LIVE' || match.status === 'IN_PLAY') && styles.liveScoreText
+                ]}>
+                  {match.score.fullTime?.home ?? '-'}
+                </Text>
+                <Text style={[
+                  styles.matchScoreSeparator,
+                  (match.status === 'LIVE' || match.status === 'IN_PLAY') && styles.liveScoreText
+                ]}>:</Text>
+                <Text style={[
+                  styles.matchScoreText,
+                  (match.status === 'LIVE' || match.status === 'IN_PLAY') && styles.liveScoreText
+                ]}>
+                  {match.score.fullTime?.away ?? '-'}
+                </Text>
+              </View>
+            )}
+          </View>
+
+          {/* Away Team */}
+          <View style={styles.matchTeamInfo}>
+            <Image
+              source={{ uri: match.awayTeam.crest }}
+              style={styles.matchTeamLogo}
+              resizeMode="contain"
+            />
+            <Text style={styles.matchTeamName} numberOfLines={1}>
+              {match.awayTeam.shortName || match.awayTeam.name}
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  // Canlı maçları filtrele
+  const liveMatches = matches.filter(match =>
+    match.status === 'LIVE' || match.status === 'IN_PLAY'
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -93,122 +367,117 @@ const HomeScreen = () => {
         </View>
       </View>
 
-      {/* Calendar Section */}
-      <View style={styles.calendarSection}>
-        <View style={styles.monthSelector}>
-          <TouchableOpacity>
-            <Ionicons name="chevron-back" size={20} color="#6b7280" />
-          </TouchableOpacity>
-          <Text style={styles.monthYearText}>{currentMonth} {currentYear}</Text>
-          <TouchableOpacity>
-            <Ionicons name="chevron-forward" size={20} color="#6b7280" />
-          </TouchableOpacity>
-          <View style={styles.calendarIconContainer}>
-            <TouchableOpacity>
-              <Ionicons name="calendar-outline" size={22} color="#9ca3af" />
-            </TouchableOpacity>
+      {/* Competitions Scrollbar */}
+      <View style={styles.competitionsContainer}>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="small" color="#6366f1" />
           </View>
-        </View>
-
-        {/* Days */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.daysScrollContent}
-        >
-          {days.map((item) => {
-            const isSelected = item.day === selectedDay;
-            return (
-              <TouchableOpacity
-                key={item.day}
-                style={[
-                  styles.dayItem,
-                  isSelected && styles.selectedDayItem
-                ]}
-                onPress={() => setSelectedDay(item.day)}
-              >
-                <Text style={[
-                  styles.dayOfWeek,
-                  isSelected && styles.selectedDayText
-                ]}>
-                  {item.dayOfWeek}
-                </Text>
-                <Text style={[
-                  styles.dayNumber,
-                  isSelected && styles.selectedDayText
-                ]}>
-                  {item.day}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-      </View>
-
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Live Match Section */}
-        <View style={styles.sectionContainer}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Live Match</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAllText}>See All</Text>
-            </TouchableOpacity>
-          </View>
-
+        ) : (
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.matchesScrollContent}
+            contentContainerStyle={styles.competitionsScrollContent}
           >
-            {/* Manchester Derby Match Card */}
-            <View style={styles.matchCard}>
-              <View style={styles.matchTeamsContainer}>
-                {/* Left Team - Blue */}
-                <View style={styles.teamLeftContainer}>
+            {/* ALL option */}
+            <TouchableOpacity
+              style={[
+                styles.competitionItem,
+                selectedCompetition === 'ALL' && styles.competitionItemSelected
+              ]}
+              onPress={() => setSelectedCompetition('ALL')}
+            >
+              <View style={[
+                styles.competitionLogoContainer,
+                selectedCompetition === 'ALL' && styles.competitionLogoContainerSelected
+              ]}>
+                <Ionicons
+                  name="football-outline"
+                  size={24}
+                  color={selectedCompetition === 'ALL' ? '#ffffff' : '#6366f1'}
+                />
+              </View>
+              <Text style={[
+                styles.competitionName,
+                selectedCompetition === 'ALL' && styles.competitionNameSelected
+              ]}>
+                All
+              </Text>
+            </TouchableOpacity>
+
+            {/* Competition list */}
+            {competitions.map((competition) => (
+              <TouchableOpacity
+                key={competition.id}
+                style={[
+                  styles.competitionItem,
+                  selectedCompetition === competition.id && styles.competitionItemSelected
+                ]}
+                onPress={() => setSelectedCompetition(competition.id)}
+              >
+                <View style={[
+                  styles.competitionLogoContainer,
+                  selectedCompetition === competition.id && styles.competitionLogoContainerSelected
+                ]}>
                   <Image
-                    source={{ uri: 'https://media.api-sports.io/football/teams/50.png' }}
-                    style={styles.teamLogo}
+                    source={{ uri: competition.emblem }}
+                    style={styles.competitionLogo}
                     resizeMode="contain"
                   />
                 </View>
-
-                {/* Right Team - Red */}
-                <View style={styles.teamRightContainer}>
-                  <Image
-                    source={{ uri: 'https://media.api-sports.io/football/teams/33.png' }}
-                    style={styles.teamLogo}
-                    resizeMode="contain"
-                  />
-                  <View style={styles.liveTag}>
-                    <Text style={styles.liveText}>LIVE</Text>
-                  </View>
-                </View>
-              </View>
-
-              {/* Bottom Info */}
-              <View style={styles.matchInfoContainer}>
-                <View style={styles.matchInfoHeader}>
-                  <View style={styles.teamsInfoPill}>
-                    <Image
-                      source={{ uri: 'https://media.api-sports.io/football/leagues/39.png' }}
-                      style={styles.leagueLogoSmall}
-                      resizeMode="contain"
-                    />
-                    <Text style={styles.teamShortName}>MC</Text>
-                    <Text style={styles.vsText}>vs</Text>
-                    <Text style={styles.teamShortName}>MU</Text>
-                  </View>
-                  <Text style={styles.matchDate}>MAR 17, 2024</Text>
-                </View>
-
-                <View style={styles.watchNowContainer}>
-                  <TouchableOpacity style={styles.watchNowButton}>
-                    <Text style={styles.watchNowText}>Watch Now</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
+                <Text style={[
+                  styles.competitionName,
+                  selectedCompetition === competition.id && styles.competitionNameSelected
+                ]}>
+                  {competition.code || competition.name}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </ScrollView>
+        )}
+      </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Live Match Section */}
+        {liveMatches.length > 0 && (
+          <View style={styles.sectionContainer}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Live Match</Text>
+              <TouchableOpacity>
+                <Text style={styles.seeAllText}>See All</Text>
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.matchesScrollContent}
+            >
+              {liveMatches.map(match => renderLiveMatch(match))}
+            </ScrollView>
+          </View>
+        )}
+
+        {/* Matches Section */}
+        <View style={styles.sectionContainer}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Matches</Text>
+          </View>
+
+          {loadingMatches ? (
+            <View style={styles.loadingMatchesContainer}>
+              <ActivityIndicator size="large" color="#6366f1" />
+              <Text style={styles.loadingText}>Loading matches...</Text>
+            </View>
+          ) : matches.length > 0 ? (
+            <View style={styles.matchesList}>
+              {matches.map(match => renderMatchItem(match))}
+            </View>
+          ) : (
+            <View style={styles.emptyMatchesContainer}>
+              <Ionicons name="football-outline" size={48} color="#d1d5db" />
+              <Text style={styles.emptyText}>No matches found for this day</Text>
+            </View>
+          )}
         </View>
 
         {/* Latest News Section */}
@@ -243,9 +512,9 @@ const HomeScreen = () => {
             </TouchableOpacity>
 
             {/* League sources */}
-            {allLeagues.slice(0, 5).map((league) => (
+            {mockCompetitions.slice(0, 5).map((league: Competition) => (
               <TouchableOpacity
-                key={league.id}
+                key={league.id.toString()}
                 style={styles.newsSourceItem}
                 onPress={() => setSelectedNewsSource(league.name)}
               >
@@ -254,7 +523,7 @@ const HomeScreen = () => {
                   selectedNewsSource === league.name ? styles.newsSourceActive : styles.newsSourceInactive
                 ]}>
                   <Image
-                    source={{ uri: league.logo }}
+                    source={{ uri: league.emblem }}
                     style={styles.newsSourceLogo}
                     resizeMode="contain"
                   />
@@ -359,15 +628,64 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
 
+  // Competitions
+  competitionsContainer: {
+    backgroundColor: '#ffffff',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  competitionsScrollContent: {
+    paddingHorizontal: 16,
+  },
+  competitionItem: {
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  competitionItemSelected: {
+    opacity: 1,
+  },
+  competitionLogoContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#f3f4f6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  competitionLogoContainerSelected: {
+    backgroundColor: '#6366f1',
+  },
+  competitionLogo: {
+    width: 30,
+    height: 30,
+  },
+  competitionName: {
+    fontSize: 12,
+    color: '#6b7280',
+  },
+  competitionNameSelected: {
+    color: '#6366f1',
+    fontWeight: '600',
+  },
+
   // Calendar Section
   calendarSection: {
-    paddingHorizontal: 16,
-    marginBottom: 20,
+    paddingVertical: 12,
+    backgroundColor: '#ffffff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
   },
   monthSelector: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
+    paddingHorizontal: 16,
   },
   monthYearText: {
     fontSize: 16,
@@ -379,7 +697,7 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
   },
   daysScrollContent: {
-    paddingRight: 16,
+    paddingHorizontal: 16,
   },
   dayItem: {
     alignItems: 'center',
@@ -404,6 +722,10 @@ const styles = StyleSheet.create({
   selectedDayText: {
     color: 'white',
   },
+  todayText: {
+    color: '#6366f1',
+    fontWeight: 'bold',
+  },
 
   // Section common
   sectionContainer: {
@@ -415,6 +737,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     marginBottom: 16,
+    marginTop: 16,
   },
   sectionTitle: {
     fontSize: 18,
@@ -438,6 +761,10 @@ const styles = StyleSheet.create({
     elevation: 2,
     overflow: 'hidden',
     marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
   matchTeamsContainer: {
     flexDirection: 'row',
@@ -510,6 +837,23 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#9ca3af', // gray-400
   },
+  scoreContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 12,
+  },
+  scoreText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#1f2937',
+  },
+  scoreSeparator: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#6b7280',
+    marginHorizontal: 8,
+  },
   watchNowContainer: {
     marginTop: 12,
     alignItems: 'flex-end',
@@ -524,6 +868,136 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 14,
     fontWeight: '500',
+  },
+
+  // Matches List
+  matchesList: {
+    paddingHorizontal: 16,
+  },
+  matchListItem: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    marginBottom: 12,
+    padding: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+  matchItemHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  leagueInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  matchLeagueLogo: {
+    width: 16,
+    height: 16,
+    marginRight: 6,
+  },
+  matchLeagueName: {
+    fontSize: 12,
+    color: '#6b7280',
+  },
+  matchStatusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    backgroundColor: '#f3f4f6',
+  },
+  matchStatusText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#1f2937',
+  },
+  matchTeamRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  matchTeamInfo: {
+    flex: 2,
+    alignItems: 'center',
+  },
+  matchTeamLogo: {
+    width: 36,
+    height: 36,
+    marginBottom: 6,
+  },
+  matchTeamName: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#1f2937',
+    textAlign: 'center',
+  },
+  matchScoreContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  matchTimeText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6366f1',
+  },
+  matchScoreBoard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f9fafb',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+  },
+  matchScoreText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1f2937',
+  },
+  matchScoreSeparator: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#6b7280',
+    marginHorizontal: 4,
+  },
+  liveScoreText: {
+    color: '#ef4444',
+  },
+  liveStatus: {
+    backgroundColor: '#fee2e2',
+  },
+  finishedStatus: {
+    backgroundColor: '#f3f4f6',
+  },
+  scheduledStatus: {
+    backgroundColor: '#e0f2fe',
+  },
+  cancelledStatus: {
+    backgroundColor: '#fef3c7',
+  },
+  loadingMatchesContainer: {
+    padding: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginTop: 8,
+    fontSize: 14,
+    color: '#6b7280',
+  },
+  emptyMatchesContainer: {
+    padding: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    fontSize: 14,
+    color: '#6b7280',
+    marginTop: 12,
   },
 
   // News section
