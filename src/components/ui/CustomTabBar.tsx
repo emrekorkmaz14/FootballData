@@ -1,37 +1,95 @@
-// src/components/ui/PillShapedTabBar.tsx
-import React from 'react';
+// src/components/ui/CustomTabBar.tsx
+import React, { useEffect, useState } from 'react';
 import {
   View,
   TouchableOpacity,
   StyleSheet,
-  Dimensions
+  Dimensions,
+  Text
 } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import TabBarIcon from './TabBarIcon';
+import {
+  HomeIcon, HomeModernIcon,
+  UserIcon, UserCircleIcon,
+  ChatBubbleLeftIcon, ChatBubbleLeftEllipsisIcon,
+  Squares2X2Icon, SquaresPlusIcon
+} from "react-native-heroicons/outline";
+import {
+  HomeIcon as HomeIconSolid,
+  UserIcon as UserIconSolid,
+  ChatBubbleLeftIcon as ChatBubbleLeftIconSolid,
+  Squares2X2Icon as Squares2X2IconSolid
+} from "react-native-heroicons/solid";
 
 const { width } = Dimensions.get('window');
 
-const PillShapedTabBar: React.FC<BottomTabBarProps> = ({
+const CustomTabBar: React.FC<BottomTabBarProps> = ({
   state,
   descriptors,
   navigation
 }) => {
   const insets = useSafeAreaInsets();
+  // Sekme konteynerlerinin referanslarını izlemek için state kullanıyoruz
+  const [tabShapes, setTabShapes] = useState<Record<string, any>>({});
 
+  // Tab değişikliklerinde container stillerini yeniden hesapla
+  useEffect(() => {
+    const newShapes: Record<string, any> = {};
+    state.routes.forEach((route, index) => {
+      const isFocused = state.index === index;
+      newShapes[route.key] = {
+        active: isFocused,
+        route
+      };
+    });
+    setTabShapes(newShapes);
+  }, [state.index, state.routes]);
 
-  const getIconName = (routeName: string) => {
+  // Heroicons ile ikonu render eder
+  const renderIcon = (routeName: string, isFocused: boolean) => {
+    const iconProps = {
+      color: 'white',
+      size: 22
+    };
+
     switch (routeName) {
       case 'Home':
-        return 'home';
+        return isFocused
+          ? <HomeIconSolid {...iconProps} />
+          : <HomeIcon {...iconProps} />;
       case 'Matches':
-        return 'grid-outline';
+        return isFocused
+          ? <Squares2X2IconSolid {...iconProps} />
+          : <Squares2X2Icon {...iconProps} />;
       case 'Teams':
-        return 'chatbubble-outline';
+        return isFocused
+          ? <ChatBubbleLeftIconSolid {...iconProps} />
+          : <ChatBubbleLeftIcon {...iconProps} />;
       case 'Profile':
-        return 'person';
+        return isFocused
+          ? <UserIconSolid {...iconProps} />
+          : <UserIcon {...iconProps} />;
       default:
-        return 'home';
+        return isFocused
+          ? <HomeIconSolid {...iconProps} />
+          : <HomeIcon {...iconProps} />;
+    }
+  };
+
+  // Sekme başlığını almak için
+  const getTabTitle = (routeName: string) => {
+    switch (routeName) {
+      case 'Home':
+        return 'Home';
+      case 'Matches':
+        return 'Matches';
+      case 'Teams':
+        return 'Teams';
+      case 'Profile':
+        return 'Profile';
+      default:
+        return routeName;
     }
   };
 
@@ -44,6 +102,7 @@ const PillShapedTabBar: React.FC<BottomTabBarProps> = ({
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
           const isFocused = state.index === index;
+          const title = getTabTitle(route.name);
 
           const onPress = () => {
             const event = navigation.emit({
@@ -56,8 +115,6 @@ const PillShapedTabBar: React.FC<BottomTabBarProps> = ({
               navigation.navigate(route.name);
             }
           };
-
-          const iconName = getIconName(route.name);
 
           return (
             <TouchableOpacity
@@ -72,14 +129,15 @@ const PillShapedTabBar: React.FC<BottomTabBarProps> = ({
               <View
                 style={[
                   styles.iconContainer,
-                  isFocused ? styles.activeIconContainer : null
+                  isFocused ? styles.activeIconContainer : styles.inactiveIconContainer,
+                  isFocused && styles.activeContainerWithTitle
                 ]}
               >
-                <TabBarIcon
-                  name={iconName}
-                  color={'white'}
-                  size={22}
-                />
+                {renderIcon(route.name, isFocused)}
+                
+                {isFocused && (
+                  <Text style={styles.tabTitle}>{title}</Text>
+                )}
               </View>
             </TouchableOpacity>
           );
@@ -96,6 +154,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
+    zIndex: 999,
   },
   container: {
     flexDirection: 'row',
@@ -103,7 +162,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     paddingVertical: 8,
     paddingHorizontal: 12,
-    width: '80%',
+    width: '90%',
     justifyContent: 'space-evenly',
     elevation: 10,
     shadowColor: '#000',
@@ -113,23 +172,40 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.3,
     shadowRadius: 8,
+    overflow: 'hidden',
   },
   tabButton: {
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
+    height: 60,
   },
   iconContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     padding: 8,
-    borderRadius: 5000,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    overflow: 'hidden',
   },
   activeIconContainer: {
     backgroundColor: '#333333',
-    width: 50,
-    height: 50,
   },
+  activeContainerWithTitle: {
+    flexDirection: 'row',
+    width: 'auto',
+    paddingHorizontal: 12,
+  },
+  inactiveIconContainer: {
+    backgroundColor: 'transparent',
+  },
+  tabTitle: {
+    color: 'white',
+    marginLeft:5,
+    fontSize: 14,
+    fontWeight: '700',
+  }
 });
 
-export default PillShapedTabBar;
+export default CustomTabBar;

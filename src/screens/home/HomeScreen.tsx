@@ -1,5 +1,6 @@
 // src/screens/home/HomeScreen.tsx
 import React, { useState, useEffect } from 'react';
+import HomeHeader from '../../components/common/HomeHeader';
 import {
   View,
   Text,
@@ -341,31 +342,12 @@ const HomeScreen = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.userInfo}>
-          <Image
-            source={{ uri: 'https://images.unsplash.com/photo-1528892952291-009c663ce843?q=80&w=2144&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }}
-            style={styles.avatar}
-          />
-          <View style={styles.welcomeTextContainer}>
-            <View style={styles.hiContainer}>
-              <Text style={styles.hiText}>Hi Welcome</Text>
-              <Text style={styles.waveEmoji}>👋</Text>
-            </View>
-            <Text style={styles.userName}>username</Text>
-          </View>
-        </View>
-
-        <View style={styles.headerIcons}>
-          <TouchableOpacity style={styles.iconButton}>
-            <Ionicons name="search-outline" size={24} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <Ionicons name="notifications-outline" size={24} color="black" />
-          </TouchableOpacity>
-        </View>
-      </View>
+      <HomeHeader
+        username="username"
+        avatarUrl="https://images.unsplash.com/photo-1528892952291-009c663ce843?q=80&w=2144&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        onSearchPress={() => console.log('Search pressed')}
+        onNotificationPress={() => console.log('Notification pressed')}
+      />
 
       {/* Competitions Scrollbar */}
       <View style={styles.competitionsContainer}>
@@ -489,7 +471,7 @@ const HomeScreen = () => {
             </TouchableOpacity>
           </View>
 
-         
+
 
           {/* News List */}
           <View style={styles.newsListContainer}>
