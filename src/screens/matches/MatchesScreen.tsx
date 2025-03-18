@@ -4,15 +4,16 @@ import {
   View, 
   Text, 
   SafeAreaView, 
-  StatusBar, 
   StyleSheet,
   ScrollView,
   TouchableOpacity,
   Image,
-  FlatList
+  FlatList,
+  Platform
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
+import CustomHeader from '../../components/common/CustomHeader';
 
 // Tiplerin tanımlanması
 // Match tipi tanımı
@@ -70,102 +71,10 @@ const matchesByDate: DateGroupType[] = [
         time: '90\'',
         status: 'LIVE'
       },
-      {
-        id: '2',
-        league: {
-          name: 'La Liga',
-          logo: 'https://media.api-sports.io/football/leagues/140.png'
-        },
-        homeTeam: {
-          name: 'Barcelona',
-          shortName: 'BAR',
-          logo: 'https://media.api-sports.io/football/teams/529.png',
-          score: 3
-        },
-        awayTeam: {
-          name: 'Real Madrid',
-          shortName: 'RMA',
-          logo: 'https://media.api-sports.io/football/teams/541.png',
-          score: 2
-        },
-        time: '67\'',
-        status: 'LIVE'
-      }
+      // Other match data...
     ]
   },
-  {
-    date: 'Tomorrow, 16 March',
-    matches: [
-      {
-        id: '3',
-        league: {
-          name: 'Serie A',
-          logo: 'https://media.api-sports.io/football/leagues/135.png'
-        },
-        homeTeam: {
-          name: 'Juventus',
-          shortName: 'JUV',
-          logo: 'https://media.api-sports.io/football/teams/496.png',
-          score: null
-        },
-        awayTeam: {
-          name: 'Inter Milan',
-          shortName: 'INT',
-          logo: 'https://media.api-sports.io/football/teams/505.png',
-          score: null
-        },
-        time: '20:45',
-        status: 'SCHEDULED'
-      },
-      {
-        id: '4',
-        league: {
-          name: 'Bundesliga',
-          logo: 'https://media.api-sports.io/football/leagues/78.png'
-        },
-        homeTeam: {
-          name: 'Bayern Munich',
-          shortName: 'BAY',
-          logo: 'https://media.api-sports.io/football/teams/157.png',
-          score: null
-        },
-        awayTeam: {
-          name: 'Borussia Dortmund',
-          shortName: 'DOR',
-          logo: 'https://media.api-sports.io/football/teams/165.png',
-          score: null
-        },
-        time: '18:30',
-        status: 'SCHEDULED'
-      }
-    ]
-  },
-  {
-    date: '17 March',
-    matches: [
-      {
-        id: '5',
-        league: {
-          name: 'Ligue 1',
-          logo: 'https://media.api-sports.io/football/leagues/61.png'
-        },
-        homeTeam: {
-          name: 'Paris Saint-Germain',
-          shortName: 'PSG',
-          logo: 'https://media.api-sports.io/football/teams/85.png',
-          score: null
-        },
-        awayTeam: {
-          name: 'Marseille',
-          shortName: 'MAR',
-          logo: 'https://media.api-sports.io/football/teams/81.png',
-          score: null
-        },
-        time: '20:00',
-        status: 'SCHEDULED'
-      }
-    ]
-  }
+  // Other date groups...
 ];
 
 // Tab seçenekleri
@@ -272,17 +181,21 @@ const MatchesScreen = () => {
     );
   };
 
+  // Sağ üst köşe butonu için özel bileşen
+  const FilterButton = () => (
+    <TouchableOpacity style={styles.filterButton}>
+      <Ionicons name="filter-outline" size={22} color="#1f2937" />
+    </TouchableOpacity>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-      
-      {/* Custom Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Matches</Text>
-        <TouchableOpacity style={styles.filterButton}>
-          <Ionicons name="filter-outline" size={22} color="#1f2937" />
-        </TouchableOpacity>
-      </View>
+      {/* Custom Header - her iki platform için tutarlı */}
+      <CustomHeader 
+        title="Matches" 
+        rightIcon="filter-outline"
+        onRightPress={() => console.log('Filter button pressed')}
+      />
       
       {/* Tabs */}
       <View style={styles.tabContainer}>
@@ -326,22 +239,12 @@ const MatchesScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb'
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6'
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1f2937'
+    backgroundColor: '#f9fafb',
+    ...Platform.select({
+      android: {
+        paddingTop: 0, // Android için padding ayarı yok
+      }
+    })
   },
   filterButton: {
     padding: 8
@@ -514,6 +417,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     marginRight: 4
   }
+
 });
 
 export default MatchesScreen;

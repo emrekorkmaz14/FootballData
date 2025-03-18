@@ -4,16 +4,17 @@ import {
   View,
   Text,
   SafeAreaView,
-  StatusBar,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
   Image,
   TextInput,
-  FlatList
+  FlatList,
+  Platform
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
+import CustomHeader from '../../components/common/CustomHeader';
 
 // Örnek takım verileri
 const teamsData = [
@@ -27,76 +28,7 @@ const teamsData = [
     stadium: 'Emirates Stadium',
     isFavorite: true
   },
-  {
-    id: '2',
-    name: 'Manchester City',
-    country: 'England',
-    league: 'Premier League',
-    logo: 'https://media.api-sports.io/football/teams/50.png',
-    founded: 1880,
-    stadium: 'Etihad Stadium',
-    isFavorite: true
-  },
-  {
-    id: '3',
-    name: 'Barcelona',
-    country: 'Spain',
-    league: 'La Liga',
-    logo: 'https://media.api-sports.io/football/teams/529.png',
-    founded: 1899,
-    stadium: 'Camp Nou',
-    isFavorite: true
-  },
-  {
-    id: '4',
-    name: 'Real Madrid',
-    country: 'Spain',
-    league: 'La Liga',
-    logo: 'https://media.api-sports.io/football/teams/541.png',
-    founded: 1902,
-    stadium: 'Santiago Bernabéu',
-    isFavorite: false
-  },
-  {
-    id: '5',
-    name: 'Bayern Munich',
-    country: 'Germany',
-    league: 'Bundesliga',
-    logo: 'https://media.api-sports.io/football/teams/157.png',
-    founded: 1900,
-    stadium: 'Allianz Arena',
-    isFavorite: false
-  },
-  {
-    id: '6',
-    name: 'Paris Saint-Germain',
-    country: 'France',
-    league: 'Ligue 1',
-    logo: 'https://media.api-sports.io/football/teams/85.png',
-    founded: 1970,
-    stadium: 'Parc des Princes',
-    isFavorite: false
-  },
-  {
-    id: '7',
-    name: 'Juventus',
-    country: 'Italy',
-    league: 'Serie A',
-    logo: 'https://media.api-sports.io/football/teams/496.png',
-    founded: 1897,
-    stadium: 'Allianz Stadium',
-    isFavorite: false
-  },
-  {
-    id: '8',
-    name: 'Liverpool',
-    country: 'England',
-    league: 'Premier League',
-    logo: 'https://media.api-sports.io/football/teams/40.png',
-    founded: 1892,
-    stadium: 'Anfield',
-    isFavorite: true
-  }
+  // ...other team data
 ];
 
 // Kategori seçenekleri
@@ -105,7 +37,7 @@ const categories = ['All Teams', 'Favorites', 'Premier League', 'La Liga', 'Seri
 const TeamsScreen = () => {
   const [activeCategory, setActiveCategory] = useState('All Teams');
   const [searchText, setSearchText] = useState('');
-  const [teamsList, setTeamsList] = useState<TeamType[]>(teamsData);
+  const [teamsList, setTeamsList] = useState(teamsData);
 
   // Kategori değiştirme fonksiyonu
   const handleCategoryChange = (category: string) => {
@@ -205,17 +137,21 @@ const TeamsScreen = () => {
     </View>
   );
 
+  // Sağ üst köşe butonu için özel bileşen
+  const FavoriteFilterButton = () => (
+    <TouchableOpacity style={styles.favoriteFilterButton}>
+      <Ionicons name="heart" size={22} color="#ef4444" />
+    </TouchableOpacity>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-
-      {/* Custom Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Teams</Text>
-        <TouchableOpacity style={styles.favoriteFilterButton}>
-          <Ionicons name="heart" size={22} color="#ef4444" />
-        </TouchableOpacity>
-      </View>
+      {/* Custom Header - her iki platform için tutarlı */}
+      <CustomHeader 
+        title="Teams" 
+        rightIcon="heart"
+        onRightPress={() => console.log('Favorites filter pressed')}
+      />
 
       {/* Search Bar */}
       <View style={styles.searchContainer}>
@@ -291,22 +227,12 @@ const TeamsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb'
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6'
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1f2937'
+    backgroundColor: '#f9fafb',
+    ...Platform.select({
+      android: {
+        paddingTop: 0, // Android için padding ayarı yok
+      }
+    })
   },
   favoriteFilterButton: {
     padding: 8
@@ -385,7 +311,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderWidth: 2, 
     borderColor: colors.border,
-
   },
   teamHeader: {
     padding: 12,

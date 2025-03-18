@@ -345,7 +345,7 @@ const HomeScreen = () => {
       <View style={styles.header}>
         <View style={styles.userInfo}>
           <Image
-            source={{ uri: 'https://ui-avatars.com/api/?name=User&background=c7d2fe&color=4f46e5&size=128' }}
+            source={{ uri: 'https://images.unsplash.com/photo-1528892952291-009c663ce843?q=80&w=2144&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }}
             style={styles.avatar}
           />
           <View style={styles.welcomeTextContainer}>
@@ -353,7 +353,7 @@ const HomeScreen = () => {
               <Text style={styles.hiText}>Hi Welcome</Text>
               <Text style={styles.waveEmoji}>👋</Text>
             </View>
-            <Text style={styles.userName}>Rudolph Schroeder</Text>
+            <Text style={styles.userName}>username</Text>
           </View>
         </View>
 
@@ -489,48 +489,7 @@ const HomeScreen = () => {
             </TouchableOpacity>
           </View>
 
-          {/* News Sources */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.newsSourcesContainer}
-          >
-            {/* All option */}
-            <TouchableOpacity
-              style={styles.newsSourceItem}
-              onPress={() => setSelectedNewsSource('All')}
-            >
-              <View style={[
-                styles.newsSourceContainer,
-                selectedNewsSource === 'All' ? styles.newsSourceActive : styles.newsSourceInactive
-              ]}>
-                <Text style={[
-                  styles.allSourceText,
-                  selectedNewsSource === 'All' ? styles.allSourceTextActive : styles.allSourceTextInactive
-                ]}>All</Text>
-              </View>
-            </TouchableOpacity>
-
-            {/* League sources */}
-            {mockCompetitions.slice(0, 5).map((league: Competition) => (
-              <TouchableOpacity
-                key={league.id.toString()}
-                style={styles.newsSourceItem}
-                onPress={() => setSelectedNewsSource(league.name)}
-              >
-                <View style={[
-                  styles.newsSourceContainer,
-                  selectedNewsSource === league.name ? styles.newsSourceActive : styles.newsSourceInactive
-                ]}>
-                  <Image
-                    source={{ uri: league.emblem }}
-                    style={styles.newsSourceLogo}
-                    resizeMode="contain"
-                  />
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+         
 
           {/* News List */}
           <View style={styles.newsListContainer}>

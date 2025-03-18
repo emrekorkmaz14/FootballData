@@ -4,27 +4,32 @@ import {
   View, 
   Text, 
   SafeAreaView, 
-  StatusBar, 
   TouchableOpacity, 
   StyleSheet,
   ScrollView,
-  Image
+  Image,
+  Platform
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
+import CustomHeader from '../../components/common/CustomHeader';
 
 const ProfileScreen = () => {
+  // Sağ üst köşe butonu için özel bileşen
+  const SettingsButton = () => (
+    <TouchableOpacity style={styles.settingsButton}>
+      <Ionicons name="settings-outline" size={24} color="#1f2937" />
+    </TouchableOpacity>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-      
-      {/* Custom Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Profile</Text>
-        <TouchableOpacity style={styles.settingsButton}>
-          <Ionicons name="settings-outline" size={24} color="#1f2937" />
-        </TouchableOpacity>
-      </View>
+      {/* Custom Header - her iki platform için tutarlı */}
+      <CustomHeader 
+        title="Profile" 
+        rightIcon="settings-outline"
+        onRightPress={() => console.log('Settings button pressed')}
+      />
 
       <ScrollView style={styles.scrollView}>
         {/* Profile Card */}
@@ -169,22 +174,12 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb'
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6'
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1f2937'
+    backgroundColor: '#f9fafb',
+    ...Platform.select({
+      android: {
+        paddingTop: 0, // Android için padding ayarı yok
+      }
+    })
   },
   settingsButton: {
     padding: 8

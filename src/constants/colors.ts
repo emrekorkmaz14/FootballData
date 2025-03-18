@@ -1,7 +1,7 @@
 // src/constants/colors.ts
 
 export const colors = {
-    primary: '#3b82f6', // blue-500
+    primary: '#161216', // blue-500
     primary_light: '#93c5fd', // blue-300
     primary_dark: '#1d4ed8', // blue-700
     
@@ -9,7 +9,7 @@ export const colors = {
     secondary_light: '#6ee7b7', // emerald-300
     secondary_dark: '#047857', // emerald-800
     
-    background: '#ffffff',
+    background: '#f5f5f5',
     card_background: '#f9fafb', // gray-50
     
     text: '#1f2937', // gray-800
