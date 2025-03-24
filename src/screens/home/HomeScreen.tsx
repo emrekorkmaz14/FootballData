@@ -346,7 +346,7 @@ const HomeScreen = () => {
         username="username"
         avatarUrl="https://images.unsplash.com/photo-1528892952291-009c663ce843?q=80&w=2144&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         onSearchPress={() => console.log('Search pressed')}
-        onNotificationPress={() => console.log('Notification pressed')}
+
       />
 
       {/* Competitions Scrollbar */}
@@ -600,7 +600,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   competitionLogoContainerSelected: {
-    backgroundColor: '#6366f1',
+    backgroundColor: '',
   },
   competitionLogo: {
     width: 30,

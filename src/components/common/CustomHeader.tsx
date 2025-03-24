@@ -2,7 +2,7 @@
 import React, { ReactNode } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import colors from '../../constants/colors';
+//import colors from '../../constants/colors';
 
 interface CustomHeaderProps {
   title: string;

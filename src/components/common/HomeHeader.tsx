@@ -1,26 +1,29 @@
 // src/components/home/HomeHeader.tsx
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Platform, StatusBar } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import {
+  BellAlertIcon,
+  BellIcon,
+  CalendarDaysIcon,
+} from "react-native-heroicons/outline";
+import { SignalIcon } from 'react-native-heroicons/solid';
 
 interface HomeHeaderProps {
   username: string;
   avatarUrl: string;
   onSearchPress?: () => void;
-  onNotificationPress?: () => void;
 }
 
 const HomeHeader: React.FC<HomeHeaderProps> = ({
   username,
   avatarUrl,
   onSearchPress,
-  onNotificationPress
 }) => {
   return (
     <>
-      <StatusBar 
-        barStyle="dark-content" 
-        backgroundColor="#ffffff" 
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="#ffffff"
         translucent={false}
       />
       <View style={styles.header}>
@@ -39,18 +42,19 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
         </View>
 
         <View style={styles.headerIcons}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.iconButton}
             onPress={onSearchPress}
           >
-            <Ionicons name="search-outline" size={24} color="black" />
+            <CalendarDaysIcon color="black" />
           </TouchableOpacity>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.iconButton}
-            onPress={onNotificationPress}
+            onPress={onSearchPress}
           >
-            <Ionicons name="notifications-outline" size={24} color="black" />
+            <BellIcon color="black" />
           </TouchableOpacity>
+
         </View>
       </View>
     </>
