@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // Football Data API endpoints
 const BASE_URL = 'https://api.football-data.org/v4';
-//const API_KEY = 'db800fad6d874f4491c83f160c6d5101';
+
 const API_KEY = 'null';
 
 
