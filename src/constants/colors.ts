@@ -10,7 +10,7 @@ export const colors = {
     secondary_dark: '#047857', // emerald-800
     
     background: '#f5f5f5',
-    card_background: '#f9fafb', // gray-50
+    card_background: '#ffffff', // gray-50
     
     text: '#1f2937', // gray-800
     text_secondary: '#6b7280', // gray-500

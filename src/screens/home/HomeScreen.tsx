@@ -27,6 +27,7 @@ import { getCompetitions, getMatchesByCompetition, getTodayMatches } from '../..
 
 // Mock veriler (yedek olarak)
 import { mockCompetitions, mockMatches, mockNews } from '../../constants/mockData';
+import colors from '~/constants/colors';
 
 const { width } = Dimensions.get('window');
 
@@ -520,7 +521,7 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: colors.card_background,
   },
 
   // Header
@@ -600,7 +601,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   competitionLogoContainerSelected: {
-    backgroundColor: '',
+    backgroundColor: colors.primary,
   },
   competitionLogo: {
     width: 30,
@@ -699,13 +700,19 @@ const styles = StyleSheet.create({
     width: width - 32,
     borderRadius: 16,
     backgroundColor: 'white',
-    elevation: 2,
     overflow: 'hidden',
     marginBottom: 16,
+    marginRight: 16,
+    // Android için elevation
+    elevation: 1,
+    // iOS için shadow özellikleri
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    // iOS için ilave border
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   matchTeamsContainer: {
     flexDirection: 'row',
@@ -713,14 +720,14 @@ const styles = StyleSheet.create({
   },
   teamLeftContainer: {
     flex: 1,
-    backgroundColor: '#dbeafe', // light blue
+    backgroundColor: '#dbeafe',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
   },
   teamRightContainer: {
     flex: 1,
-    backgroundColor: '#fee2e2', // light red
+    backgroundColor: '#fee2e2',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
@@ -731,8 +738,8 @@ const styles = StyleSheet.create({
   },
   liveTag: {
     position: 'absolute',
-    top: 12,
-    right: 12,
+    top: 5,
+    right: 5,
     backgroundColor: '#ef4444', // red-500
     paddingHorizontal: 8,
     paddingVertical: 4,
@@ -816,15 +823,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   matchListItem: {
-    backgroundColor: 'white',
+    backgroundColor: colors.card_background,
     borderRadius: 12,
     marginBottom: 12,
     padding: 12,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    elevation: 1,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   matchItemHeader: {
     flexDirection: 'row',

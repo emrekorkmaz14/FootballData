@@ -21,6 +21,8 @@ import {
   ChatBubbleLeftIcon as ChatBubbleLeftIconSolid,
   Squares2X2Icon as Squares2X2IconSolid
 } from "react-native-heroicons/solid";
+import colors from '~/constants/colors';
+import { maxWorkers } from 'metro.config';
 
 const { width } = Dimensions.get('window');
 
@@ -50,7 +52,7 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
   const renderIcon = (routeName: string, isFocused: boolean) => {
     const iconProps = {
       color: 'white',
-      size: 22
+      size: 24
     };
 
     switch (routeName) {
@@ -134,10 +136,8 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
                 ]}
               >
                 {renderIcon(route.name, isFocused)}
-                
-                {isFocused && (
-                  <Text style={styles.tabTitle}>{title}</Text>
-                )}
+
+
               </View>
             </TouchableOpacity>
           );
@@ -150,7 +150,7 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
 const styles = StyleSheet.create({
   wrapper: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 10,
     left: 0,
     right: 0,
     alignItems: 'center',
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flexDirection: 'row',
-    backgroundColor: '#0A0A0A',
+    backgroundColor: colors.primary,
     borderRadius: 25,
     paddingVertical: 8,
     paddingHorizontal: 12,
@@ -178,19 +178,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
-    height: 60,
+    height: 50,
   },
   iconContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 8,
-    width: 50,
+    width: 100,
     height: 50,
-    borderRadius: 25,
-    overflow: 'hidden',
+    borderRadius: 50,
   },
   activeIconContainer: {
-    backgroundColor: '#333333',
+    backgroundColor: 'transparent',
   },
   activeContainerWithTitle: {
     flexDirection: 'row',
@@ -200,12 +198,7 @@ const styles = StyleSheet.create({
   inactiveIconContainer: {
     backgroundColor: 'transparent',
   },
-  tabTitle: {
-    color: 'white',
-    marginLeft:5,
-    fontSize: 14,
-    fontWeight: '700',
-  }
+
 });
 
 export default CustomTabBar;

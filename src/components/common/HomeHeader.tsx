@@ -7,6 +7,7 @@ import {
   CalendarDaysIcon,
 } from "react-native-heroicons/outline";
 import { SignalIcon } from 'react-native-heroicons/solid';
+import colors from '../../constants/colors';
 
 interface HomeHeaderProps {
   username: string;
@@ -19,11 +20,24 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   avatarUrl,
   onSearchPress,
 }) => {
+  // Get current date and format it
+  const getCurrentDate = () => {
+    const date = new Date();
+    // Format options for the date
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    };
+    return date.toLocaleDateString('en-US', options);
+  };
+
   return (
     <>
       <StatusBar
         barStyle="dark-content"
-        backgroundColor="#ffffff"
+        backgroundColor="#f9fafb"
         translucent={false}
       />
       <View style={styles.header}>
@@ -34,10 +48,11 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
           />
           <View style={styles.welcomeTextContainer}>
             <View style={styles.hiContainer}>
-              <Text style={styles.hiText}>Hi Welcome</Text>
+              <Text style={styles.hiText}>Welcome </Text>
+              <Text style={styles.userName}>{username}</Text>
               <Text style={styles.waveEmoji}>👋</Text>
             </View>
-            <Text style={styles.userName}>{username}</Text>
+            <Text style={styles.dateText}>{getCurrentDate()}</Text>
           </View>
         </View>
 
@@ -54,7 +69,6 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
           >
             <BellIcon color="black" />
           </TouchableOpacity>
-
         </View>
       </View>
     </>
@@ -103,14 +117,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6b7280',
   },
+  dateText: {
+    fontSize: 14,
+    color: '#6b7280',
+  },
   waveEmoji: {
     marginLeft: 4,
     fontSize: 14,
   },
   userName: {
-    fontSize: 17,
+    fontSize: 14,
     fontWeight: 'bold',
-    color: '#1f2937',
+    color: colors.primary,
   },
   headerIcons: {
     flexDirection: 'row',

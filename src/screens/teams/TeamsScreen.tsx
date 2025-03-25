@@ -28,7 +28,496 @@ const teamsData = [
     stadium: 'Emirates Stadium',
     isFavorite: true
   },
-  // ...other team data
+  {
+    id: '2',
+    name: 'Manchester United',
+    country: 'England',
+    league: 'Premier League',
+    logo: 'https://media.api-sports.io/football/teams/33.png',
+    founded: 1878,
+    stadium: 'Old Trafford',
+    isFavorite: false
+  },
+  {
+    id: '3',
+    name: 'Liverpool',
+    country: 'England',
+    league: 'Premier League',
+    logo: 'https://media.api-sports.io/football/teams/40.png',
+    founded: 1892,
+    stadium: 'Anfield',
+    isFavorite: false
+  },
+  {
+    id: '4',
+    name: 'Chelsea',
+    country: 'England',
+    league: 'Premier League',
+    logo: 'https://media.api-sports.io/football/teams/49.png',
+    founded: 1905,
+    stadium: 'Stamford Bridge',
+    isFavorite: false
+  },
+  {
+    id: '5',
+    name: 'Manchester City',
+    country: 'England',
+    league: 'Premier League',
+    logo: 'https://media.api-sports.io/football/teams/50.png',
+    founded: 1880,
+    stadium: 'Etihad Stadium',
+    isFavorite: false
+  },
+  {
+    id: '6',
+    name: 'Tottenham Hotspur',
+    country: 'England',
+    league: 'Premier League',
+    logo: 'https://media.api-sports.io/football/teams/47.png',
+    founded: 1882,
+    stadium: 'Tottenham Hotspur Stadium',
+    isFavorite: false
+  },
+  {
+    id: '7',
+    name: 'Fenerbahçe',
+    country: 'Turkey',
+    league: 'Süper Lig',
+    logo: 'https://media.api-sports.io/football/teams/611.png',
+    founded: 1907,
+    stadium: 'Ülker Stadyumu',
+    isFavorite: false
+  },
+  {
+    id: '8',
+    name: 'Galatasaray',
+    country: 'Turkey',
+    league: 'Süper Lig',
+    logo: 'https://media.api-sports.io/football/teams/645.png',
+    founded: 1905,
+    stadium: 'Rams Park',
+    isFavorite: false
+  },
+  {
+    id: '9',
+    name: 'Beşiktaş',
+    country: 'Turkey',
+    league: 'Süper Lig',
+    logo: 'https://media.api-sports.io/football/teams/549.png',
+    founded: 1903,
+    stadium: 'Vodafone Park',
+    isFavorite: false
+  },
+  {
+    id: '10',
+    name: 'Real Madrid',
+    country: 'Spain',
+    league: 'La Liga',
+    logo: 'https://media.api-sports.io/football/teams/541.png',
+    founded: 1902,
+    stadium: 'Santiago Bernabéu',
+    isFavorite: false
+  },
+  {
+    id: '11',
+    name: 'Barcelona',
+    country: 'Spain',
+    league: 'La Liga',
+    logo: 'https://media.api-sports.io/football/teams/529.png',
+    founded: 1899,
+    stadium: 'Camp Nou',
+    isFavorite: false
+  },
+  {
+    id: '12',
+    name: 'Atlético Madrid',
+    country: 'Spain',
+    league: 'La Liga',
+    logo: 'https://media.api-sports.io/football/teams/530.png',
+    founded: 1903,
+    stadium: 'Wanda Metropolitano',
+    isFavorite: false
+  },
+  {
+    id: '13',
+    name: 'Sevilla',
+    country: 'Spain',
+    league: 'La Liga',
+    logo: 'https://media.api-sports.io/football/teams/536.png',
+    founded: 1890,
+    stadium: 'Ramón Sánchez Pizjuán',
+    isFavorite: false
+  },
+  {
+    id: '14',
+    name: 'Valencia',
+    country: 'Spain',
+    league: 'La Liga',
+    logo: 'https://media.api-sports.io/football/teams/532.png',
+    founded: 1919,
+    stadium: 'Mestalla',
+    isFavorite: false
+  },
+  {
+    id: '15',
+    name: 'Juventus',
+    country: 'Italy',
+    league: 'Serie A',
+    logo: 'https://media.api-sports.io/football/teams/496.png',
+    founded: 1897,
+    stadium: 'Allianz Stadium',
+    isFavorite: false
+  },
+  {
+    id: '16',
+    name: 'AC Milan',
+    country: 'Italy',
+    league: 'Serie A',
+    logo: 'https://media.api-sports.io/football/teams/489.png',
+    founded: 1899,
+    stadium: 'San Siro',
+    isFavorite: false
+  },
+  {
+    id: '17',
+    name: 'Inter Milan',
+    country: 'Italy',
+    league: 'Serie A',
+    logo: 'https://media.api-sports.io/football/teams/505.png',
+    founded: 1908,
+    stadium: 'San Siro',
+    isFavorite: false
+  },
+  {
+    id: '18',
+    name: 'Napoli',
+    country: 'Italy',
+    league: 'Serie A',
+    logo: 'https://media.api-sports.io/football/teams/492.png',
+    founded: 1926,
+    stadium: 'Diego Armando Maradona',
+    isFavorite: false
+  },
+  {
+    id: '19',
+    name: 'AS Roma',
+    country: 'Italy',
+    league: 'Serie A',
+    logo: 'https://media.api-sports.io/football/teams/497.png',
+    founded: 1927,
+    stadium: 'Stadio Olimpico',
+    isFavorite: false
+  },
+  {
+    id: '20',
+    name: 'Lazio',
+    country: 'Italy',
+    league: 'Serie A',
+    logo: 'https://media.api-sports.io/football/teams/487.png',
+    founded: 1900,
+    stadium: 'Stadio Olimpico',
+    isFavorite: false
+  },
+  {
+    id: '21',
+    name: 'Bayern Munich',
+    country: 'Germany',
+    league: 'Bundesliga',
+    logo: 'https://media.api-sports.io/football/teams/157.png',
+    founded: 1900,
+    stadium: 'Allianz Arena',
+    isFavorite: false
+  },
+  {
+    id: '22',
+    name: 'Borussia Dortmund',
+    country: 'Germany',
+    league: 'Bundesliga',
+    logo: 'https://media.api-sports.io/football/teams/165.png',
+    founded: 1909,
+    stadium: 'Signal Iduna Park',
+    isFavorite: false
+  },
+  {
+    id: '23',
+    name: 'RB Leipzig',
+    country: 'Germany',
+    league: 'Bundesliga',
+    logo: 'https://media.api-sports.io/football/teams/173.png',
+    founded: 2009,
+    stadium: 'Red Bull Arena',
+    isFavorite: false
+  },
+  {
+    id: '24',
+    name: 'Bayer Leverkusen',
+    country: 'Germany',
+    league: 'Bundesliga',
+    logo: 'https://media.api-sports.io/football/teams/168.png',
+    founded: 1904,
+    stadium: 'BayArena',
+    isFavorite: false
+  },
+  {
+    id: '25',
+    name: 'Eintracht Frankfurt',
+    country: 'Germany',
+    league: 'Bundesliga',
+    logo: 'https://media.api-sports.io/football/teams/169.png',
+    founded: 1899,
+    stadium: 'Deutsche Bank Park',
+    isFavorite: false
+  },
+  {
+    id: '26',
+    name: 'Paris Saint-Germain',
+    country: 'France',
+    league: 'Ligue 1',
+    logo: 'https://media.api-sports.io/football/teams/85.png',
+    founded: 1970,
+    stadium: 'Parc des Princes',
+    isFavorite: false
+  },
+  {
+    id: '27',
+    name: 'Olympique Marseille',
+    country: 'France',
+    league: 'Ligue 1',
+    logo: 'https://media.api-sports.io/football/teams/81.png',
+    founded: 1899,
+    stadium: 'Orange Vélodrome',
+    isFavorite: false
+  },
+  {
+    id: '28',
+    name: 'Olympique Lyonnais',
+    country: 'France',
+    league: 'Ligue 1',
+    logo: 'https://media.api-sports.io/football/teams/80.png',
+    founded: 1950,
+    stadium: 'Groupama Stadium',
+    isFavorite: false
+  },
+  {
+    id: '29',
+    name: 'AS Monaco',
+    country: 'France',
+    league: 'Ligue 1',
+    logo: 'https://media.api-sports.io/football/teams/91.png',
+    founded: 1924,
+    stadium: 'Stade Louis II',
+    isFavorite: false
+  },
+  {
+    id: '30',
+    name: 'Lille OSC',
+    country: 'France',
+    league: 'Ligue 1',
+    logo: 'https://media.api-sports.io/football/teams/79.png',
+    founded: 1944,
+    stadium: 'Stade Pierre-Mauroy',
+    isFavorite: false
+  },
+  {
+    id: '31',
+    name: 'Leicester City',
+    country: 'England',
+    league: 'Premier League',
+    logo: 'https://media.api-sports.io/football/teams/46.png',
+    founded: 1884,
+    stadium: 'King Power Stadium',
+    isFavorite: false
+  },
+  {
+    id: '32',
+    name: 'West Ham United',
+    country: 'England',
+    league: 'Premier League',
+    logo: 'https://media.api-sports.io/football/teams/48.png',
+    founded: 1895,
+    stadium: 'London Stadium',
+    isFavorite: false
+  },
+  {
+    id: '33',
+    name: 'Everton',
+    country: 'England',
+    league: 'Premier League',
+    logo: 'https://media.api-sports.io/football/teams/45.png',
+    founded: 1878,
+    stadium: 'Goodison Park',
+    isFavorite: false
+  },
+  {
+    id: '34',
+    name: 'Aston Villa',
+    country: 'England',
+    league: 'Premier League',
+    logo: 'https://media.api-sports.io/football/teams/66.png',
+    founded: 1874,
+    stadium: 'Villa Park',
+    isFavorite: false
+  },
+  {
+    id: '35',
+    name: 'Newcastle United',
+    country: 'England',
+    league: 'Premier League',
+    logo: 'https://media.api-sports.io/football/teams/34.png',
+    founded: 1892,
+    stadium: 'St. James Park',
+    isFavorite: false
+  },
+  {
+    id: '36',
+    name: 'Athletic Bilbao',
+    country: 'Spain',
+    league: 'La Liga',
+    logo: 'https://media.api-sports.io/football/teams/531.png',
+    founded: 1898,
+    stadium: 'San Mamés',
+    isFavorite: false
+  },
+  {
+    id: '37',
+    name: 'Real Sociedad',
+    country: 'Spain',
+    league: 'La Liga',
+    logo: 'https://media.api-sports.io/football/teams/548.png',
+    founded: 1909,
+    stadium: 'Reale Arena',
+    isFavorite: false
+  },
+  {
+    id: '38',
+    name: 'Villarreal',
+    country: 'Spain',
+    league: 'La Liga',
+    logo: 'https://media.api-sports.io/football/teams/533.png',
+    founded: 1923,
+    stadium: 'Estadio de la Cerámica',
+    isFavorite: false
+  },
+  {
+    id: '39',
+    name: 'Atalanta',
+    country: 'Italy',
+    league: 'Serie A',
+    logo: 'https://media.api-sports.io/football/teams/499.png',
+    founded: 1907,
+    stadium: 'Gewiss Stadium',
+    isFavorite: false
+  },
+  {
+    id: '40',
+    name: 'Fiorentina',
+    country: 'Italy',
+    league: 'Serie A',
+    logo: 'https://media.api-sports.io/football/teams/502.png',
+    founded: 1926,
+    stadium: 'Artemio Franchi',
+    isFavorite: false
+  },
+  {
+    id: '41',
+    name: 'Bologna',
+    country: 'Italy',
+    league: 'Serie A',
+    logo: 'https://media.api-sports.io/football/teams/500.png',
+    founded: 1909,
+    stadium: 'Renato Dall Ara',
+    isFavorite: false
+  },
+  {
+    id: '42',
+    name: 'VfB Stuttgart',
+    country: 'Germany',
+    league: 'Bundesliga',
+    logo: 'https://media.api-sports.io/football/teams/162.png',
+    founded: 1893,
+    stadium: 'Mercedes-Benz Arena',
+    isFavorite: false
+  },
+  {
+    id: '43',
+    name: 'Borussia Mönchengladbach',
+    country: 'Germany',
+    league: 'Bundesliga',
+    logo: 'https://media.api-sports.io/football/teams/163.png',
+    founded: 1900,
+    stadium: 'Borussia-Park',
+    isFavorite: false
+  },
+  {
+    id: '44',
+    name: 'VfL Wolfsburg',
+    country: 'Germany',
+    league: 'Bundesliga',
+    logo: 'https://media.api-sports.io/football/teams/161.png',
+    founded: 1945,
+    stadium: 'Volkswagen Arena',
+    isFavorite: false
+  },
+  {
+    id: '45',
+    name: 'Nice',
+    country: 'France',
+    league: 'Ligue 1',
+    logo: 'https://media.api-sports.io/football/teams/84.png',
+    founded: 1904,
+    stadium: 'Allianz Riviera',
+    isFavorite: false
+  },
+  {
+    id: '46',
+    name: 'Stade Rennais',
+    country: 'France',
+    league: 'Ligue 1',
+    logo: 'https://media.api-sports.io/football/teams/94.png',
+    founded: 1901,
+    stadium: 'Roazhon Park',
+    isFavorite: false
+  },
+  {
+    id: '47',
+    name: 'RC Lens',
+    country: 'France',
+    league: 'Ligue 1',
+    logo: 'https://media.api-sports.io/football/teams/116.png',
+    founded: 1906,
+    stadium: 'Stade Bollaert-Delelis',
+    isFavorite: false
+  },
+  {
+    id: '48',
+    name: 'Schalke 04',
+    country: 'Germany',
+    league: 'Bundesliga',
+    logo: 'https://media.api-sports.io/football/teams/174.png',
+    founded: 1904,
+    stadium: 'Veltins-Arena',
+    isFavorite: false
+  },
+  {
+    id: '49',
+    name: 'PSV Eindhoven',
+    country: 'Netherlands',
+    league: 'Eredivisie',
+    logo: 'https://media.api-sports.io/football/teams/197.png',
+    founded: 1913,
+    stadium: 'Philips Stadion',
+    isFavorite: false
+  },
+  {
+    id: '50',
+    name: 'Ajax',
+    country: 'Netherlands',
+    league: 'Eredivisie',
+    logo: 'https://media.api-sports.io/football/teams/194.png',
+    founded: 1900,
+    stadium: 'Johan Cruyff Arena',
+    isFavorite: false
+  }
 ];
 
 // Kategori seçenekleri
@@ -293,7 +782,8 @@ const styles = StyleSheet.create({
     fontWeight: '600'
   },
   teamsGridContent: {
-    padding: 12
+    padding: 10,
+    paddingBottom: 100,
   },
   teamsRow: {
     justifyContent: 'space-between'
@@ -309,14 +799,12 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
     overflow: 'hidden',
-    borderWidth: 2, 
+    borderWidth: 1, 
     borderColor: colors.border,
   },
   teamHeader: {
     padding: 12,
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
     position: 'relative'
   },
   teamLogo: {
@@ -350,8 +838,6 @@ const styles = StyleSheet.create({
   },
   teamFooter: {
     padding: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
     alignItems: 'center'
   },
   teamButton: {

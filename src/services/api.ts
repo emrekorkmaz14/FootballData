@@ -1,10 +1,15 @@
 // src/services/api.ts
- // db800fad6d874f4491c83f160c6d5101
+// db800fad6d874f4491c83f160c6d5101
 import axios from 'axios';
 
 // Football Data API endpoints
-const BASE_URL = 'https://api.football-data.org/v4';
-const API_KEY = 'db800fad6d874f4491c83f160c6d5101'; 
+//const BASE_URL = 'https://api.football-data.org/v4';
+const BASE_URL = 'fake';
+const API_KEY = 'db800fad6d874f4491c83f160c6d5101';
+
+const apifootball = 'd1c04c75886cc8f5b074c219f439387c';
+const mediastackapikey = ' ee18cde8c8c166926b6bde3228e2e7ac';
+
 
 // API istekleri için temel axios instance
 const api = axios.create({
@@ -30,12 +35,12 @@ export const getCompetitions = async () => {
 export const getMatchesByCompetition = async (competitionId: string, dateFrom?: string, dateTo?: string) => {
   try {
     let url = `/competitions/${competitionId}/matches`;
-    
+
     // İsteğe bağlı tarih filtreleri
     if (dateFrom && dateTo) {
       url += `?dateFrom=${dateFrom}&dateTo=${dateTo}`;
     }
-    
+
     const response = await api.get(url);
     return response.data.matches;
   } catch (error) {
@@ -49,7 +54,7 @@ export const getTodayMatches = async () => {
   try {
     // Bugünün tarihini YYYY-MM-DD formatında al
     const today = new Date().toISOString().split('T')[0];
-    
+
     const response = await api.get(`/matches?dateFrom=${today}&dateTo=${today}`);
     return response.data.matches;
   } catch (error) {
