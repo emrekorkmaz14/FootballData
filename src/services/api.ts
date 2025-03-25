@@ -1,14 +1,12 @@
 // src/services/api.ts
-// db800fad6d874f4491c83f160c6d5101
 import axios from 'axios';
 
 // Football Data API endpoints
-//const BASE_URL = 'https://api.football-data.org/v4';
-const BASE_URL = 'fake';
-const API_KEY = 'db800fad6d874f4491c83f160c6d5101';
+const BASE_URL = 'https://api.football-data.org/v4';
+//const API_KEY = 'db800fad6d874f4491c83f160c6d5101';
+const API_KEY = 'null';
 
-const apifootball = 'd1c04c75886cc8f5b074c219f439387c';
-const mediastackapikey = ' ee18cde8c8c166926b6bde3228e2e7ac';
+
 
 
 // API istekleri için temel axios instance
