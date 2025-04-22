@@ -11,7 +11,6 @@ import {
   Image,
   Dimensions,
   StyleSheet,
-  FlatList,
   ActivityIndicator
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
